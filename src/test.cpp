@@ -79,7 +79,7 @@ void quit(int sig)
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "teleop_home");
+  ros::init(argc, argv, "test_sync_axis");
   int MODE=atoi(argv[1]);
   double SPEED=atof(argv[2]);
   TeleopHome teleop_home(MODE,SPEED);
@@ -127,32 +127,16 @@ void TeleopHome::keyLoop()
   
     switch(c)
     {
-      case KEYCODE_U:
+      case KEYCODE_U://go
         //angular_0=angular_0+angular_increment_0;
 	angular_0=speed;
 	ROS_INFO("UP %f",angular_0);
         break;
-      case KEYCODE_D:
+      case KEYCODE_D://back
         //angular_0=angular_0-angular_increment_0;
 	angular_0=-1*speed;
 	ROS_INFO("DOWN %f",angular_0);
         break;
-      case KEYCODE_R:
-        //angular_1=angular_1-angular_increment_1;
-	angular_1=-1*speed;
-	ROS_INFO("RIGHT %f",angular_1);
-        break;
-      case KEYCODE_L:
-        //angular_1=angular_1+angular_increment_1;
-	angular_1=speed;
-	ROS_INFO("LEFT %f",angular_1);
-        break;
-      case KEYCODE_P:
-        ROS_INFO("STOP MOVING");
-        angular_0 = 0.0;
-	angular_1 = 0.0;
-        break;
-
 
     }
 
