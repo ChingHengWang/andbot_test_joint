@@ -123,6 +123,8 @@ include_directories(
 # target_link_libraries(sin_wave_l0 ${catkin_LIBRARIES})
  add_executable(teleop_home src/teleop_home.cpp)
  target_link_libraries(teleop_home ${catkin_LIBRARIES})
+ add_executable(moveR src/moveR.cpp)
+ target_link_libraries(moveR ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(andbot_test_joint
