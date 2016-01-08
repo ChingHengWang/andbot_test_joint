@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <sensor_msgs/Joy.h>
 #include <stdlib.h>
+#define PI 3.14159
 struct point{
   std_msgs::Float64 x;
   std_msgs::Float64 y;
@@ -22,7 +23,6 @@ struct arm_angle{
 class MoveR
 {
 public:
-  ros::Time current_time, last_time;
   point Target_left;
   arm_angle left_arm_angle;
   double length_link_up,length_link_down;
@@ -33,27 +33,54 @@ public:
 
   ros::NodeHandle nh_;
   ros::Publisher axis_l0_pub,axis_l1_pub,axis_l2_pub,axis_l3_pub;
-protected:
   ros::Subscriber goal_sub; 
 };
 
  void MoveR::goalCallback(const geometry_msgs::Vector3& vector){
-  Target_left.x.data=1.0;
+  //ROS_INFO("subscribe\n");
+  Target_left.x.data=vector.x;
   Target_left.y.data=vector.y;
   Target_left.z.data=vector.z;
-  return ; 
 }
 void MoveR::IK(const point& p)
 {
-  left_arm_angle.th_0.data=p.x.data;
-  left_arm_angle.th_1.data=p.y.data;
-  left_arm_angle.th_2.data=p.z.data;
-  left_arm_angle.th_3.data=0;
+  //ROS_INFO("IK\n");
+  double th0=0,th1=0;
+  double x=p.x.data;
+  double y=p.y.data;
+  double z=p.z.data;
+  double temp1=pow(x,2)+pow(y,2)+pow(z,2);
+  double len_E=pow(temp1,0.5);
+  if(x>=0&&y<0)
+    th0=atan((double)abs(x)/abs(y));
+  else if(x>=0&&y>=0)
+      th0=PI-atan((double)abs(x)/abs(y));
+    else if(x<0&&y>=0)
+        th0=PI+atan((double)abs(x)/abs(y));
+      else if(x<0&&y<0)
+          th0=2*PI-atan((double)abs(x)/abs(y));
+  double temp2=pow(pow(x,2)+pow(y,2),0.5);
+  if(z>=0)
+    th1=-atan((double)abs(z)/temp2);
+  else if(z<0)
+    th1=atan((double)abs(z)/temp2);
+
+   ROS_INFO("IK:th0 %f\n",th0);
+   ROS_INFO("IK:th1 %f\n",th1);
+
+  if(isnan(th0)||isnan(th1)||th0>3.14||th0<-1.57||th1<0||th1>1.57){
+    ROS_INFO("Fail and dont move\n");
+   }
+  else{
+    ROS_INFO("go move\n");
+    left_arm_angle.th_0.data=th0;
+    left_arm_angle.th_1.data=th1;
+    left_arm_angle.th_2.data=0;
+    left_arm_angle.th_3.data=0;
+  }
 }
   MoveR::MoveR()
 {
-  current_time = ros::Time::now();
-  last_time = ros::Time::now();
   length_link_up=220,length_link_down=270;    
 
   left_arm_angle.th_0.data=0.0;
@@ -66,7 +93,7 @@ void MoveR::IK(const point& p)
   axis_l1_pub = nh_.advertise<std_msgs::Float64>("andbot/joint/L1/cmd/position", 1);
   axis_l2_pub = nh_.advertise<std_msgs::Float64>("andbot/joint/L2/cmd/position", 1);
   axis_l3_pub = nh_.advertise<std_msgs::Float64>("andbot/joint/L3/cmd/position", 1);
-  goal_sub = nh_.subscribe("andbot/left_arm/goal", 1000, &MoveR::goalCallback,this);
+  goal_sub = nh_.subscribe("/andbot/left_arm/goal", 1000, &MoveR::goalCallback,this);
 
 
 }
@@ -78,22 +105,22 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "moveR_left_arm");
   MoveR move_R;
 //  move_R.IK_loop();
- printf("hello"); 
   ros::Rate r(50.0);
 
   while(move_R.nh_.ok())
   {
-    ROS_INFO("x %f",move_R.Target_left.x.data);
-    ros::spinOnce;
+/*
+    ROS_INFO("x %f\n",move_R.Target_left.x.data);i
+    ROS_INFO("y %f\n",move_R.Target_left.y.data);
+    ROS_INFO("z %f\n",move_R.Target_left.z.data);
+*/    
+    ros::spinOnce();
     move_R.IK(move_R.Target_left);
-    //current_time = ros::Time::now();
-    //th_l0.data=current_time.toSec();
-    move_R.axis_l0_pub.publish(move_R.Target_left.x);
+    move_R.axis_l0_pub.publish(move_R.left_arm_angle.th_0);
     move_R.axis_l1_pub.publish(move_R.left_arm_angle.th_1);
     move_R.axis_l2_pub.publish(move_R.left_arm_angle.th_2);
     move_R.axis_l3_pub.publish(move_R.left_arm_angle.th_3);
 
-    //last_time = ros::Time::now(); 
     r.sleep();
   }
   return(0);
@@ -110,14 +137,11 @@ void MoveR::IK_loop()
   {
     ros::spinOnce; 
     IK(Target_left);
-    //current_time = ros::Time::now();
-    //th_l0.data=current_time.toSec();
     axis_l0_pub.publish(Target_left.x);
     axis_l1_pub.publish(left_arm_angle.th_1);
     axis_l2_pub.publish(left_arm_angle.th_2);
     axis_l3_pub.publish(left_arm_angle.th_3);
 
-    //last_time = ros::Time::now(); 
     r.sleep();
   }
 

@@ -125,6 +125,8 @@ include_directories(
  target_link_libraries(teleop_home ${catkin_LIBRARIES})
  add_executable(moveR src/moveR.cpp)
  target_link_libraries(moveR ${catkin_LIBRARIES})
+ add_executable(sub_test src/sub_test.cpp)
+ target_link_libraries(sub_test ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(andbot_test_joint
