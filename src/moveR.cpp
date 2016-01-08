@@ -14,10 +14,10 @@ struct point{
 };
 
 struct arm_angle{
-  std_msgs::Float64 th_0;
-  std_msgs::Float64 th_1;
-  std_msgs::Float64 th_2;
-  std_msgs::Float64 th_3;
+  geometry_msgs::Vector3 th_0;
+  geometry_msgs::Vector3 th_1;
+  geometry_msgs::Vector3 th_2;
+  geometry_msgs::Vector3 th_3;
 };
  
 class MoveR
@@ -73,26 +73,41 @@ void MoveR::IK(const point& p)
    }
   else{
     ROS_INFO("go move\n");
-    left_arm_angle.th_0.data=th0;
-    left_arm_angle.th_1.data=th1;
-    left_arm_angle.th_2.data=0;
-    left_arm_angle.th_3.data=0;
+    left_arm_angle.th_0.x=th0;
+    left_arm_angle.th_0.y=0;
+    left_arm_angle.th_1.x=th1;
+    left_arm_angle.th_1.y=0;
+    left_arm_angle.th_2.x=0;
+    left_arm_angle.th_2.y=0;
+    left_arm_angle.th_3.x=0;
+    left_arm_angle.th_3.y=0;
+
+
+
   }
 }
   MoveR::MoveR()
 {
   length_link_up=220,length_link_down=270;    
 
-  left_arm_angle.th_0.data=0.0;
-  left_arm_angle.th_1.data=0.0;
-  left_arm_angle.th_2.data=0.0;
-  left_arm_angle.th_3.data=0.0;
+  left_arm_angle.th_0.x=0.0;
+  left_arm_angle.th_0.y=0.0;
+
+  left_arm_angle.th_1.x=0.0;
+  left_arm_angle.th_1.y=0.0;
+
+  left_arm_angle.th_2.x=0.0;
+  left_arm_angle.th_2.y=0.0;
+
+  left_arm_angle.th_3.x=0.0;
+  left_arm_angle.th_3.y=0.0;
+
   Target_left.x.data=0.0,Target_left.y.data=0.0,Target_left.z.data=0.0;
 
-  axis_l0_pub = nh_.advertise<std_msgs::Float64>("andbot/joint/L0/cmd/position", 1);
-  axis_l1_pub = nh_.advertise<std_msgs::Float64>("andbot/joint/L1/cmd/position", 1);
-  axis_l2_pub = nh_.advertise<std_msgs::Float64>("andbot/joint/L2/cmd/position", 1);
-  axis_l3_pub = nh_.advertise<std_msgs::Float64>("andbot/joint/L3/cmd/position", 1);
+  axis_l0_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L0/cmd/position", 1);
+  axis_l1_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L1/cmd/position", 1);
+  axis_l2_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L2/cmd/position", 1);
+  axis_l3_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L3/cmd/position", 1);
   goal_sub = nh_.subscribe("/andbot/left_arm/goal", 1000, &MoveR::goalCallback,this);
 
 
