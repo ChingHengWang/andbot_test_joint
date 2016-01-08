@@ -74,13 +74,13 @@ void MoveR::IK(const point& p)
   else{
     ROS_INFO("go move\n");
     left_arm_angle.th_0.x=th0;
-    left_arm_angle.th_0.y=0;
+    left_arm_angle.th_0.y=10;
     left_arm_angle.th_1.x=th1;
-    left_arm_angle.th_1.y=0;
+    left_arm_angle.th_1.y=10;
     left_arm_angle.th_2.x=0;
-    left_arm_angle.th_2.y=0;
+    left_arm_angle.th_2.y=10;
     left_arm_angle.th_3.x=0;
-    left_arm_angle.th_3.y=0;
+    left_arm_angle.th_3.y=10;
 
 
 
