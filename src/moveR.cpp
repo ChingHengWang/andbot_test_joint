@@ -120,7 +120,7 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "moveR_left_arm");
   MoveR move_R;
 //  move_R.IK_loop();
-  ros::Rate r(1.0);
+  ros::Rate r(0.5);
 
   while(move_R.nh_.ok())
   {
