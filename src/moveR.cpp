@@ -68,7 +68,7 @@ void MoveR::IK(const point& p)
    ROS_INFO("IK:th0 %f\n",th0);
    ROS_INFO("IK:th1 %f\n",th1);
 
-  if(isnan(th0)||isnan(th1)||th0>3.14||th0<-1.57||th1<0||th1>1.57){
+  if(isnan(th0)||isnan(th1)||th0>PI||th0<-1.57||th1<0||th1>1.57){
     ROS_INFO("Fail and dont move\n");
    }
   else{
