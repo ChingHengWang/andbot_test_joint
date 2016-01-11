@@ -156,9 +156,9 @@ void MoveR::IK4(const point& P)
   double p[3]={x,y,z};
   double temp1=pow(x,2)+pow(y,2)+pow(z,2);
   double norm_p=pow(temp1,0.5);
-
-  th3=PI-acos((pow(lup,2)+pow(ldn,2)-pow(norm_p,2))/(2*lup*ldn));
-  double a=sin(th3)*asin(ldn/norm_p);
+  double b=acos((pow(lup,2)+pow(ldn,2)-pow(norm_p,2))/(2*lup*ldn));
+  th3=PI-b;  
+  double a=asin((ldn/norm_p)*sin(b));
   double s[3]={0,0,0};
   double u_z[3]={0,0,1};
   double p_s[3];
@@ -177,13 +177,18 @@ void MoveR::IK4(const point& P)
   //v_print(u_n,3);	
   double tmp[3];
   v_scalar_multip(v_dot(u_z,u_n,3),u_n,tmp,3);
-  double u_u[3];
-  v_add(u_z,tmp,u_u,3);
+  double u[3],u_u[3];
+  v_add(u_z,tmp,u,3);
+  double norm_u=pow(pow(u[0],2)+pow(u[1],2)+pow(u[2],2),0.5);
+  v_scalar_multip(1/norm_u,u,u_u,3);
 
   //ROS_INFO("u_u \n");
   //v_print(u_u,3);	
-  double u_v[3];
-  v_cross(u_n,u_u,u_v);
+  double v[3],u_v[3];
+  v_cross(u_n,u_u,v);
+  double norm_v=pow(pow(v[0],2)+pow(v[1],2)+pow(v[2],2),0.5);
+  v_scalar_multip(1/norm_v,v,u_v,3);
+
   //ROS_INFO("u_v \n");
   //v_print(u_v,3);	
 
