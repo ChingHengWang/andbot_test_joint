@@ -252,7 +252,7 @@ void MoveR::IK4(const point& P)
 
   MoveR::MoveR()
 {
-  lup=220,ldn=270;    
+  lup=235,ldn=250;    
 
   left_arm_angle.th_0.x=0.0;
   left_arm_angle.th_0.y=0.0;
@@ -283,25 +283,7 @@ int main(int argc, char** argv)
 
   ros::init(argc, argv, "moveR_left_arm");
   MoveR move_R;
-//  move_R.IK_loop();
-  ros::Rate r(0.5);
-
-  while(move_R.nh_.ok())
-  {
-/*
-    ROS_INFO("x %f\n",move_R.Target_left.x.data);i
-    ROS_INFO("y %f\n",move_R.Target_left.y.data);
-    ROS_INFO("z %f\n",move_R.Target_left.z.data);
-*/    
-    ros::spinOnce();
-    move_R.IK4(move_R.Target_left);
-    move_R.axis_l0_pub.publish(move_R.left_arm_angle.th_0);
-    move_R.axis_l1_pub.publish(move_R.left_arm_angle.th_1);
-    move_R.axis_l2_pub.publish(move_R.left_arm_angle.th_2);
-    move_R.axis_l3_pub.publish(move_R.left_arm_angle.th_3);
-
-    r.sleep();
-  }
+  move_R.IK_loop();
   return(0);
 }
 
@@ -310,13 +292,13 @@ void MoveR::IK_loop()
 {
 
 
-  ros::Rate r(50.0);
+  ros::Rate r(0.5);
 
   while(nh_.ok())
   {
-    ros::spinOnce; 
-    IK(Target_left);
-    axis_l0_pub.publish(Target_left.x);
+    ros::spinOnce();
+    IK4(Target_left);
+    axis_l0_pub.publish(left_arm_angle.th_0);
     axis_l1_pub.publish(left_arm_angle.th_1);
     axis_l2_pub.publish(left_arm_angle.th_2);
     axis_l3_pub.publish(left_arm_angle.th_3);
