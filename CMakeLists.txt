@@ -123,8 +123,11 @@ include_directories(
 # target_link_libraries(sin_wave_l0 ${catkin_LIBRARIES})
  add_executable(teleop_home src/teleop_home.cpp)
  target_link_libraries(teleop_home ${catkin_LIBRARIES})
- add_executable(moveR src/moveR.cpp)
- target_link_libraries(moveR ${catkin_LIBRARIES})
+ add_executable(left_arm_moveR src/left_arm_moveR.cpp)
+ target_link_libraries(left_arm_moveR ${catkin_LIBRARIES})
+ add_executable(right_arm_moveR src/right_arm_moveR.cpp)
+ target_link_libraries(right_arm_moveR ${catkin_LIBRARIES})
+
  add_executable(sub_test src/sub_test.cpp)
  target_link_libraries(sub_test ${catkin_LIBRARIES})
 

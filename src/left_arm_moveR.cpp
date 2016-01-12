@@ -1,19 +1,23 @@
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
 #include <geometry_msgs/Vector3.h>
+#include <geometry_msgs/Pose.h>
 #include <signal.h>
 #include <termios.h>
 #include <stdio.h>
 #include <sensor_msgs/Joy.h>
 #include <stdlib.h>
 #define PI 3.14159
+#define LEFT_ARM 1
+#define RIGHT_ARM 0
+
 struct point{
   std_msgs::Float64 x;
   std_msgs::Float64 y;
   std_msgs::Float64 z;
 };
 
-struct arm_angle{
+struct Arm_Angle{
   geometry_msgs::Vector3 th_0;
   geometry_msgs::Vector3 th_1;
   geometry_msgs::Vector3 th_2;
@@ -80,71 +84,30 @@ void v_print(double a[],int n)
 class MoveR
 {
 public:
-  point Target_left;
-  arm_angle left_arm_angle;
+  point Target;
+  Arm_Angle arm_angle;
   double lup,ldn;
-  void goalCallback(const geometry_msgs::Vector3& msg);
+  void goalCallback(const geometry_msgs::Pose& msg);
   MoveR();
   void IK_loop();
-  void IK(const point& p);
   void IK4(const point& P);
-
+  double move_time;
+  double fi;
   ros::NodeHandle nh_;
-  ros::Publisher axis_l0_pub,axis_l1_pub,axis_l2_pub,axis_l3_pub;
+  ros::Publisher axis_0_pub,axis_1_pub,axis_2_pub,axis_3_pub;
   ros::Subscriber goal_sub; 
 };
 
- void MoveR::goalCallback(const geometry_msgs::Vector3& vector){
+ void MoveR::goalCallback(const geometry_msgs::Pose& pose){
   //ROS_INFO("subscribe\n");
-  Target_left.x.data=vector.x;
-  Target_left.y.data=vector.y;
-  Target_left.z.data=vector.z;
+  Target.x.data=pose.position.x;
+  Target.y.data=pose.position.y;
+  Target.z.data=pose.position.z;
+  fi=pose.orientation.x;
+  move_time=pose.orientation.y;
+
 }
-void MoveR::IK(const point& p)
-{
-  //ROS_INFO("IK\n");
-  double th0=0,th1=0;
-  double x=p.x.data;
-  double y=p.y.data;
-  double z=p.z.data;
-  double temp1=pow(x,2)+pow(y,2)+pow(z,2);
-  double len_E=pow(temp1,0.5);
 
-  if(x>=0&&y<0)
-    th0=atan((double)abs(x)/abs(y));
-  else if(x>=0&&y>=0)
-      th0=PI-atan((double)abs(x)/abs(y));
-    else if(x<0&&y>=0)
-        th0=PI+atan((double)abs(x)/abs(y));
-      else if(x<0&&y<0)
-          th0=2*PI-atan((double)abs(x)/abs(y));
-  double temp2=pow(pow(x,2)+pow(y,2),0.5);
-  if(z>=0)
-    th1=-atan((double)abs(z)/temp2);
-  else if(z<0)
-    th1=atan((double)abs(z)/temp2);
-
-   ROS_INFO("IK:th0 %f\n",th0);
-   ROS_INFO("IK:th1 %f\n",th1);
-
-  if(isnan(th0)||isnan(th1)||th0>PI||th0<-1.57||th1<0||th1>1.57){
-    ROS_INFO("Fail and dont move\n");
-   }
-  else{
-    ROS_INFO("go move\n");
-    left_arm_angle.th_0.x=th0;
-    left_arm_angle.th_0.y=10;
-    left_arm_angle.th_1.x=th1;
-    left_arm_angle.th_1.y=10;
-    left_arm_angle.th_2.x=0;
-    left_arm_angle.th_2.y=10;
-    left_arm_angle.th_3.x=0;
-    left_arm_angle.th_3.y=10;
-
-
-
-  }
-}
 
 void MoveR::IK4(const point& P)
 {
@@ -196,7 +159,7 @@ void MoveR::IK4(const point& P)
   v_scalar_multip(cos(a)*lup,u_n,tmp,3);
   v_add(s,tmp,c,3);
   double r=lup*sin(a);
-  double fi=PI/2;
+  //double fi=PI/2;
   
   //ROS_INFO("a %f\n",a);
   double tmp1[3],tmp2[3];
@@ -236,57 +199,70 @@ void MoveR::IK4(const point& P)
   th2=atan2(-x*sin(th0)*sin(th1)+y*cos(th0)*sin(th1)-z*cos(th1),x*cos(th0)+y*sin(th0));
   ROS_INFO("x %f  y %f  z %f\n",x,y,z);
 
-  ROS_INFO("th0 %f  th1 %f  th2 %f  th3 %f\n",th0,th1,th2,th3);
+  ROS_INFO("th0 %f  th1 %f  th2 %f  th3 %f  fi% f\n",th0,th1,th2,th3,fi);
 
   if(isnan(th0)||isnan(th1)||isnan(th2)||isnan(th3)||th0>PI||th0<-1.57||th1<-0.01||th1>1.57){
     ROS_INFO("Fail and dont move\n");
    }
   else{
-    ROS_INFO("go move\n");
-    left_arm_angle.th_0.x=th0;
-    left_arm_angle.th_0.y=10;
-    left_arm_angle.th_1.x=th1;
-    left_arm_angle.th_1.y=10;
-    left_arm_angle.th_2.x=th2;
-    left_arm_angle.th_2.y=10;
-    left_arm_angle.th_3.x=th3;
-    left_arm_angle.th_3.y=10;
+    ROS_INFO("go move move time=%f\n",move_time);
+    arm_angle.th_0.x=th0;
+    arm_angle.th_0.y=move_time;
+    arm_angle.th_1.x=th1;
+    arm_angle.th_1.y=move_time;
+    arm_angle.th_2.x=th2;
+    arm_angle.th_2.y=move_time;
+    arm_angle.th_3.x=th3;
+    arm_angle.th_3.y=move_time;
 
   }
 }
 
   MoveR::MoveR()
 {
+
+  move_time=10;
+  fi=PI/2;
   lup=235,ldn=250;    
 
-  left_arm_angle.th_0.x=0.0;
-  left_arm_angle.th_0.y=0.0;
+  arm_angle.th_0.x=0.0;
+  arm_angle.th_0.y=0.0;
 
-  left_arm_angle.th_1.x=0.0;
-  left_arm_angle.th_1.y=0.0;
+  arm_angle.th_1.x=0.0;
+  arm_angle.th_1.y=0.0;
 
-  left_arm_angle.th_2.x=0.0;
-  left_arm_angle.th_2.y=0.0;
+  arm_angle.th_2.x=0.0;
+  arm_angle.th_2.y=0.0;
 
-  left_arm_angle.th_3.x=0.0;
-  left_arm_angle.th_3.y=0.0;
+  arm_angle.th_3.x=0.0;
+  arm_angle.th_3.y=0.0;
 
-  Target_left.x.data=0.0,Target_left.y.data=0.0,Target_left.z.data=0.0;
-
-  axis_l0_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L0/cmd/position", 1);
-  axis_l1_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L1/cmd/position", 1);
-  axis_l2_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L2/cmd/position", 1);
-  axis_l3_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L3/cmd/position", 1);
-  goal_sub = nh_.subscribe("/andbot/left_arm/goal", 1000, &MoveR::goalCallback,this);
-
+  Target.x.data=0.0,Target.y.data=0.0,Target.z.data=0.0;
+  if(LEFT_ARM){
+    axis_0_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L0/cmd/position", 1);
+    axis_1_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L1/cmd/position", 1);
+    axis_2_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L2/cmd/position", 1);
+    axis_3_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L3/cmd/position", 1);
+    goal_sub = nh_.subscribe("/andbot/left_arm/goal", 1000, &MoveR::goalCallback,this);
+  }
+  if(RIGHT_ARM){
+    axis_0_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R0/cmd/position", 1);
+    axis_1_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R1/cmd/position", 1);
+    axis_2_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R2/cmd/position", 1);
+    axis_3_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R3/cmd/position", 1);
+    goal_sub = nh_.subscribe("/andbot/right_arm/goal", 1000, &MoveR::goalCallback,this);
+  }
 
 }
 
 
 int main(int argc, char** argv)
 {
+  if(LEFT_ARM)
+    ros::init(argc, argv, "moveR_left_arm");
+  else if(RIGHT_ARM)
+      ros::init(argc, argv, "moveR_right_arm");
 
-  ros::init(argc, argv, "moveR_left_arm");
   MoveR move_R;
   move_R.IK_loop();
   return(0);
@@ -302,11 +278,11 @@ void MoveR::IK_loop()
   while(nh_.ok())
   {
     ros::spinOnce();
-    IK4(Target_left);
-    axis_l0_pub.publish(left_arm_angle.th_0);
-    axis_l1_pub.publish(left_arm_angle.th_1);
-    axis_l2_pub.publish(left_arm_angle.th_2);
-    axis_l3_pub.publish(left_arm_angle.th_3);
+    IK4(Target);
+    axis_0_pub.publish(arm_angle.th_0);
+    axis_1_pub.publish(arm_angle.th_1);
+    axis_2_pub.publish(arm_angle.th_2);
+    axis_3_pub.publish(arm_angle.th_3);
 
     r.sleep();
   }
