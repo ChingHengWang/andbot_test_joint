@@ -286,7 +286,7 @@ void MoveR::IK_loop()
 {
 
 
-  ros::Rate r(0.5);
+  ros::Rate r(2);
 
   while(nh_.ok())
   {
