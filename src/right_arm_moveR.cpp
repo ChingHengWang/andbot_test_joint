@@ -84,6 +84,7 @@ void v_print(double a[],int n)
 class MoveR
 {
 public:
+  double TH0_MAX,TH0_MIN,TH1_MAX,TH1_MIN,TH3_MAX,TH3_MIN;
   point Target;
   Arm_Angle arm_angle;
   double lup,ldn;
@@ -108,6 +109,55 @@ public:
 
 }
 
+
+  MoveR::MoveR()
+{
+  TH0_MAX=PI;
+  TH0_MIN=-1.57;
+  if(LEFT_ARM){
+    TH1_MAX=1.57;
+    TH1_MIN=-0.01;
+  }else if(RIGHT_ARM)
+  {
+     TH1_MAX=0.01;
+      TH1_MIN=-1.57;
+  }
+  TH3_MAX=1.57;
+  TH3_MIN=-0.01;
+
+  move_time=10;
+  fi=PI/2;
+  lup=235,ldn=250;    
+
+  arm_angle.th_0.x=0.0;
+  arm_angle.th_0.y=0.0;
+
+  arm_angle.th_1.x=0.0;
+  arm_angle.th_1.y=0.0;
+
+  arm_angle.th_2.x=0.0;
+  arm_angle.th_2.y=0.0;
+
+  arm_angle.th_3.x=0.0;
+  arm_angle.th_3.y=0.0;
+
+  Target.x.data=0.0,Target.y.data=0.0,Target.z.data=0.0;
+  if(LEFT_ARM){
+    axis_0_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L0/cmd/position", 1);
+    axis_1_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L1/cmd/position", 1);
+    axis_2_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L2/cmd/position", 1);
+    axis_3_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L3/cmd/position", 1);
+    goal_sub = nh_.subscribe("/andbot/left_arm/goal", 1000, &MoveR::goalCallback,this);
+  }
+  if(RIGHT_ARM){
+    axis_0_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R0/cmd/position", 1);
+    axis_1_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R1/cmd/position", 1);
+    axis_2_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R2/cmd/position", 1);
+    axis_3_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R3/cmd/position", 1);
+    goal_sub = nh_.subscribe("/andbot/right_arm/goal", 1000, &MoveR::goalCallback,this);
+  }
+
+}
 
 void MoveR::IK4(const point& P)
 {
@@ -201,7 +251,7 @@ void MoveR::IK4(const point& P)
 
   ROS_INFO("th0 %f  th1 %f  th2 %f  th3 %f  fi% f\n",th0,th1,th2,th3,fi);
 
-  if(isnan(th0)||isnan(th1)||isnan(th2)||isnan(th3)||th0>PI||th0<-1.57||th1<-0.01||th1>1.57){
+  if(isnan(th0)||isnan(th1)||isnan(th2)||isnan(th3)||th0>TH0_MAX||th0<TH0_MIN||th1>TH1_MAX||th1<TH1_MIN||th3>TH3_MAX||th3<TH3_MIN){
     ROS_INFO("Fail and dont move\n");
    }
   else{
@@ -216,43 +266,6 @@ void MoveR::IK4(const point& P)
     arm_angle.th_3.y=move_time;
 
   }
-}
-
-  MoveR::MoveR()
-{
-
-  move_time=10;
-  fi=PI/2;
-  lup=235,ldn=250;    
-
-  arm_angle.th_0.x=0.0;
-  arm_angle.th_0.y=0.0;
-
-  arm_angle.th_1.x=0.0;
-  arm_angle.th_1.y=0.0;
-
-  arm_angle.th_2.x=0.0;
-  arm_angle.th_2.y=0.0;
-
-  arm_angle.th_3.x=0.0;
-  arm_angle.th_3.y=0.0;
-
-  Target.x.data=0.0,Target.y.data=0.0,Target.z.data=0.0;
-  if(LEFT_ARM){
-    axis_0_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L0/cmd/position", 1);
-    axis_1_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L1/cmd/position", 1);
-    axis_2_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L2/cmd/position", 1);
-    axis_3_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/L3/cmd/position", 1);
-    goal_sub = nh_.subscribe("/andbot/left_arm/goal", 1000, &MoveR::goalCallback,this);
-  }
-  if(RIGHT_ARM){
-    axis_0_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R0/cmd/position", 1);
-    axis_1_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R1/cmd/position", 1);
-    axis_2_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R2/cmd/position", 1);
-    axis_3_pub = nh_.advertise<geometry_msgs::Vector3>("andbot/joint/R3/cmd/position", 1);
-    goal_sub = nh_.subscribe("/andbot/right_arm/goal", 1000, &MoveR::goalCallback,this);
-  }
-
 }
 
 
