@@ -33,8 +33,8 @@ int main(int argc, char** argv)
 
   ros::init(argc, argv, "action");
   ros::NodeHandle nh_;
-  ros::Publisher action_left_pub = nh_.advertise<geometry_msgs::Pose>("/andbot/left_arm_goal", 500);
-  ros::Publisher action_right_pub = nh_.advertise<geometry_msgs::Pose>("/andbot/right_arm_goal", 500);
+  ros::Publisher action_left_pub = nh_.advertise<geometry_msgs::Pose>("/andbot/left_arm/goal", 500);
+  ros::Publisher action_right_pub = nh_.advertise<geometry_msgs::Pose>("/andbot/right_arm/goal", 500);
   ros::Subscriber pose_sub = nh_.subscribe("/andbot/predefinepose", 1000, predefineCallback);
 
   geometry_msgs::Pose pose_left,pose_right;
