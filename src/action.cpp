@@ -49,6 +49,7 @@ struct HoldTray{
 
  void predefineCallback(const std_msgs::UInt8& msg){
    action_state=msg.data;
+   move_state=0;
    duration_time=0;
 
 }
