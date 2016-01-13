@@ -130,7 +130,7 @@ int main(int argc, char** argv)
                 move_to_pose_left(holdtray.left_p0);
                 move_to_pose_right(holdtray.right_p0);
                 ROS_INFO("l:p0 r:p0");
-		if(duration_time>=20) {move_state=1;}
+		if(duration_time>=0) {move_state=1;}
 		break;
               case 1:
                 move_to_pose_left(holdtray.left_p1);
