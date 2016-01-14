@@ -33,7 +33,7 @@ struct KunFu{
 }kunfu=
 {
   {0,-350,0,1.57,5},{0,-350,0,1.57,5},
-  {0,-350,0,1.57,5},{0,-350,0,1.57,5}
+  {485,0,0,1.57,5},{485,0,0,1.57,5},
 
 };
 
@@ -43,7 +43,7 @@ struct HoldTray{
 }holdtray=
 {
   {0,-350,0,1.57,5},{0,-350,0,1.57,5},
-  {300,-230,0,1.57,5},{300,-230,0,1.57,5},
+  {300,-200,0,1.57,5},{300,-200,0,1.57,5},
 };
 
 
@@ -108,13 +108,19 @@ int main(int argc, char** argv)
                 move_to_pose_left(kunfu.left_p0);
                 move_to_pose_right(kunfu.right_p0);
                 ROS_INFO("l:p0 r:p0");
-		if(duration_time>=10) {move_state=1;}
+		if(duration_time>=10) {move_state=1;duration_time=0;}
 		break;
               case 1:
-                move_to_pose_left(kunfu.left_p1);
+                move_to_pose_left(kunfu.left_p0);
                 move_to_pose_right(kunfu.right_p1);
-                ROS_INFO("l:p1 r:p1");
-		if(duration_time>=10) {move_state=1;}
+                ROS_INFO("l:p0 r:p1");
+		if(duration_time>=10) {move_state=2;duration_time=0;}
+		break;
+              case 2:
+                move_to_pose_left(kunfu.left_p1);
+                move_to_pose_right(kunfu.right_p0);
+                ROS_INFO("l:p1 r:p0");
+		if(duration_time>=10) {move_state=1;duration_time=0;}
 		break;
             }
 	    break;
@@ -130,7 +136,7 @@ int main(int argc, char** argv)
                 move_to_pose_left(holdtray.left_p0);
                 move_to_pose_right(holdtray.right_p0);
                 ROS_INFO("l:p0 r:p0");
-		if(duration_time>=0) {move_state=1;}
+		if(duration_time>=10) {move_state=1;}
 		break;
               case 1:
                 move_to_pose_left(holdtray.left_p1);
