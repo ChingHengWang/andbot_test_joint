@@ -32,8 +32,8 @@ struct KunFu{
 
 }kunfu=
 {
-  {0,-350,0,1.57,5},{0,-350,0,1.57,5},
-  {485,0,0,1.57,5},{485,0,0,1.57,5},
+  {0,-350,0,1.57,0},{0,-350,0,1.57,0},
+  {485,0,0,1.57,0},{485,0,0,1.57,0},
 
 };
 
@@ -46,6 +46,14 @@ struct HoldTray{
   {300,-200,0,1.57,5},{300,-200,0,1.57,5},
 };
 
+struct Strong{
+  Arm_Pose left_p0,right_p0;
+  Arm_Pose left_p1,right_p1;
+}strong=
+{
+  {0,-350,0,1.57,5},{0,-350,0,1.57,5},
+  {200,200,-200,2.04,5},{200,200,200,1.1,5},
+};
 
  void predefineCallback(const std_msgs::UInt8& msg){
    action_state=msg.data;
@@ -148,6 +156,31 @@ int main(int argc, char** argv)
 	    break;
 
           }
+	case 3:
+ 	  {
+            ROS_INFO("Strong t=%d",duration_time);
+	    switch(move_state)
+            {
+
+              case 0:
+                move_to_pose_left(strong.left_p0);
+                move_to_pose_right(strong.right_p0);
+                ROS_INFO("l:p0 r:p0");
+		if(duration_time>=10) {move_state=1;duration_time=0;}
+		break;
+              case 1:
+                move_to_pose_left(strong.left_p1);
+                move_to_pose_right(strong.right_p1);
+                ROS_INFO("l:p1 r:p1");
+		if(duration_time>=10) {move_state=0;duration_time=0;}
+
+		break;
+
+            }
+	    break;
+
+          }
+
     }
 
     action_left_pub.publish(pose_left);
