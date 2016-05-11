@@ -122,11 +122,11 @@ public:
      TH1_MAX=0.01;
       TH1_MIN=-1.57;
   }
-  TH3_MAX=1.57;
+  TH3_MAX=2.2;
   TH3_MIN=-0.01;
 
   move_time=10;
-  fi=PI/2;
+  fi=0;
   lup=235,ldn=250;    
 
   arm_angle.th_0.x=0.0;
@@ -191,7 +191,11 @@ void MoveR::IK4(const point& P)
   double tmp[3];
   v_scalar_multip(v_dot(u_z,u_n,3),u_n,tmp,3);
   double u[3],u_u[3];
-  v_add(u_z,tmp,u,3);
+  //v_add(u_z,tmp,u,3);
+  
+  //u correct on 2/17
+  v_cross(u_n,u_z,u);
+
   double norm_u=pow(pow(u[0],2)+pow(u[1],2)+pow(u[2],2),0.5);
   v_scalar_multip(1/norm_u,u,u_u,3);
 
@@ -210,8 +214,9 @@ void MoveR::IK4(const point& P)
   v_add(s,tmp,c,3);
   double r=lup*sin(a);
   //double fi=PI/2;
-  
-  //ROS_INFO("a %f\n",a);
+  ROS_INFO("b %f\n",b);
+
+  ROS_INFO("a %f\n",a);
   double tmp1[3],tmp2[3];
   v_scalar_multip(cos(fi),u_u,tmp1,3);
   v_scalar_multip(sin(fi),u_v,tmp2,3);
@@ -219,13 +224,13 @@ void MoveR::IK4(const point& P)
   v_scalar_multip(r,tmp,tmp,3);
   double e[3];
   v_add(c,tmp,e,3);
-  //ROS_INFO("e \n");
-  //v_print(e,3);	
+  ROS_INFO("u_u \n");
+  v_print(u_u,3);	
 
   double ex=e[0],ey=e[1],ez=e[2];
-  //ROS_INFO("ex %f\n",ex);
-  //ROS_INFO("ey %f\n",ey);
-  //ROS_INFO("ez %f\n",ez);
+  ROS_INFO("ex %f\n",ex);
+  ROS_INFO("ey %f\n",ey);
+  ROS_INFO("ez %f\n",ez);
 
   if(ex>=0&&ey<0)
     th0=atan((double)abs(ex)/abs(ey));

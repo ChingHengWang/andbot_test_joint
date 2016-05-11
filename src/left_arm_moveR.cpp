@@ -126,7 +126,7 @@ public:
   TH3_MIN=-0.01;
 
   move_time=10;
-  fi=PI/2;
+  fi=0;
   lup=235,ldn=250;    
 
   arm_angle.th_0.x=0.0;
@@ -191,7 +191,11 @@ void MoveR::IK4(const point& P)
   double tmp[3];
   v_scalar_multip(v_dot(u_z,u_n,3),u_n,tmp,3);
   double u[3],u_u[3];
-  v_add(u_z,tmp,u,3);
+  //v_add(u_z,tmp,u,3);
+
+  //u correct on 2/17
+  v_cross(u_n,u_z,u);
+
   double norm_u=pow(pow(u[0],2)+pow(u[1],2)+pow(u[2],2),0.5);
   v_scalar_multip(1/norm_u,u,u_u,3);
 
