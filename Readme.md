@@ -4,7 +4,7 @@
 ## joint frame 
 ![](https://github.com/ChingHengWang/andbot_test_joint/blob/master/joint_frame.jpeg)
 
-
+## Steps
 * roslaunch andbot andbot.launch or andbot_ekf.launch (裡面啟動arm.launch)
 
 * rosrun andbot_test_joint teleop_home 0 0.1 左手0軸&1軸 (speed = 0.1rad/s)
