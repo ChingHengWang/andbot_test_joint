@@ -1,8 +1,7 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package andbot_test_joint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-0.0.1 (2016-05-30)
+0.0.2 (2016-05-30)
 ------------------
 * add arm_test.launch
 * add arm.launch
@@ -10,3 +9,6 @@ Changelog for package andbot_test_joint
 * contributors: Zach
 
 
+0.0.1 (2016-05-30)
+------------------
+* first 
