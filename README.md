@@ -2,7 +2,7 @@
 * v0.1
 
 ## joint frame 
-![](https://github.com/ChingHengWang/andbot_test_joint/blob/master/joint_frame.jpeg)
+![](https://github.com/ChingHengWang/andbot_test_joint/blob/master/ref/joint_frame.jpeg)
 
 ## Steps
 * roslaunch andbot andbot.launch or andbot_ekf.launch (裡面啟動arm.launch)
