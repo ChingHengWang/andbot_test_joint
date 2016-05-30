@@ -1,7 +1,4 @@
 # andbot_test_joint
-* version - v0.2
-* 1. add arm_test.launch
-* 2. modify kunfu proper position
 
 ## joint frame 
 ![](https://github.com/ChingHengWang/andbot_test_joint/blob/master/ref/joint_frame.jpeg)
