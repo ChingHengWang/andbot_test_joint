@@ -4,7 +4,7 @@
 ![](https://github.com/ChingHengWang/andbot_test_joint/blob/master/ref/joint_frame.jpeg)
 
 ## Step
-* cd ~/catkin_ws/src/metal
+* cd ~/catkin_ws/src/metal1
 * git pull
 * rospack profile
 * roslaunch andbot_arm.launch (ther arm arm.launch file in this two launches)
