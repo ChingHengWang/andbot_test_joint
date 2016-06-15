@@ -128,7 +128,6 @@ include_directories(
  add_executable(right_arm_moveR src/right_arm_moveR.cpp)
  target_link_libraries(right_arm_moveR ${catkin_LIBRARIES})
 
- target_link_libraries(sub_test ${catkin_LIBRARIES})
  add_executable(action src/action.cpp)
  target_link_libraries(action ${catkin_LIBRARIES})
 
