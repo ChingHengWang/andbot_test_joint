@@ -7,7 +7,7 @@
 * cd ~/catkin_ws/src/metal1
 * git pull
 * rospack profile
-* roslaunch andbot_arm.launch (ther arm arm.launch file in this two launches)
+* roslaunch andbot arm_test.launch 
 * rostopic list
   * check topic alive
 
